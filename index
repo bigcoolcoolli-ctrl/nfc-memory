@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Resonance Memory</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Georgia, serif;
+      background: linear-gradient(135deg, #f8f3ee, #e8ddd2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .card {
+      width: 90%;
+      max-width: 720px;
+      background: rgba(255,255,255,0.92);
+      border-radius: 22px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 26px;
+      color: #3e352f;
+    }
+
+    .meta {
+      font-size: 13px;
+      color: #7a6a5b;
+      margin-top: 10px;
+    }
+
+    .message {
+      margin-top: 25px;
+      font-size: 18px;
+      color: #4a3d33;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    audio, video {
+      width: 100%;
+      margin-top: 25px;
+      border-radius: 12px;
+    }
+
+    .lock {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #b08a6a;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <h1>💌 Resonance Memory</h1>
+
+  <!-- URL参数显示 -->
+  <div class="meta" id="meta"></div>
+
+  <!-- 音频（Airtable后接） -->
+  <audio controls style="display:none" id="audio"></audio>
+
+  <!-- 视频（Airtable后接） -->
+  <video controls style="display:none" id="video"></video>
+
+  <!-- 留言 -->
+  <div class="message" id="message">
+    Loading memory...
+  </div>
+
+  <!-- 锁提示 -->
+  <div class="lock">
+    🔒 Protected by unique memory code
+  </div>
+
+</div>
+
+<script>
+  // 1. 获取 recordId
+  const params = new URLSearchParams(window.location.search);
+  const recordId = params.get("recordId");
+
+  document.getElementById("meta").innerText =
+    "Memory ID: " + (recordId || "unknown");
+
+  // 2. TODO: 未来接 Airtable API
+  // fetch(`/api/getMemory?recordId=${recordId}`)
+
+  // 3. 模拟数据（先保证页面结构正确）
+  const demo = {
+    message: "This is your personalized memory.\nA place where sound and words live forever.",
+    audio: "",
+    video: ""
+  };
+
+  document.getElementById("message").innerText = demo.message;
+</script>
+
+</body>
+</html>
