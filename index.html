@@ -5,44 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Resonance Keepsakes</title>
 
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Source+Sans+3:wght@300;400;500&display=swap" rel="stylesheet">
 
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
       font-family: 'Source Sans 3', sans-serif;
+      background: #000;
       color: #fff;
       min-height: 100vh;
-      background: url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=2000') center/cover no-repeat;
     }
 
-    body::before {
-      content: "";
+    /* ===== Background ===== */
+    .bg {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.45);
+      background: url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=2000') center/cover no-repeat;
       z-index: 0;
     }
 
+    .bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+    }
+
+    /* ===== Layout ===== */
     .container {
       position: relative;
       z-index: 2;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      padding: 22px;
+      padding: 20px;
       text-align: center;
     }
 
+    /* ===== Logo ===== */
     .logo {
       font-family: 'Playfair Display', serif;
-      font-size: 20px;
-      margin-top: 10px;
+      font-size: 18px;
       letter-spacing: 2px;
+      margin-top: 10px;
+      opacity: 0.95;
     }
 
-    .media-box {
+    /* ===== Media ===== */
+    .media-wrap {
       margin-top: 40px;
       display: flex;
       justify-content: center;
@@ -51,50 +67,86 @@
     .media {
       width: 100%;
       max-width: 420px;
-      border-radius: 16px;
+      border-radius: 18px;
       overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
     }
 
     video, audio {
       width: 100%;
+      display: block;
+    }
+
+    /* ===== Card ===== */
+    .card {
+      margin-top: 26px;
+      background: rgba(255,255,255,0.92);
+      color: #111;
+      border-radius: 20px;
+      padding: 22px 18px;
+      max-width: 420px;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
     }
 
     h1 {
       font-family: 'Playfair Display', serif;
-      margin-top: 25px;
-      font-size: 26px;
+      font-size: 28px;
+      margin-bottom: 14px;
+      font-weight: 500;
     }
 
     p {
-      margin-top: 12px;
+      font-family: 'Source Sans 3', sans-serif;
       font-size: 15px;
-      line-height: 1.6;
+      line-height: 1.7;
       opacity: 0.9;
       white-space: pre-wrap;
     }
 
+    .divider {
+      margin: 12px 0;
+      font-size: 14px;
+      opacity: 0.5;
+    }
+
+    /* ===== Slogan ===== */
     .slogan {
       margin-top: auto;
+      padding: 24px 0 10px;
       font-size: 13px;
       opacity: 0.75;
-      padding-bottom: 15px;
+      letter-spacing: 0.5px;
     }
   </style>
 </head>
 
 <body>
 
+<div class="bg"></div>
+
 <div class="container">
 
+  <!-- LOGO (固定) -->
   <div class="logo">RESONANCE KEEPSAKES</div>
 
-  <div class="media-box">
+  <!-- MEDIA（动态） -->
+  <div class="media-wrap">
     <div class="media" id="media"></div>
   </div>
 
-  <h1 id="heading"></h1>
-  <p id="message"></p>
+  <!-- CONTENT（动态） -->
+  <div class="card">
+    <h1 id="heading"></h1>
+    <div class="divider">❤</div>
+    <p id="message"></p>
+  </div>
 
+  <!-- SLOGAN（固定） -->
   <div class="slogan">
     A beautiful place for moments worth keeping
   </div>
@@ -102,25 +154,43 @@
 </div>
 
 <script>
-  const code = new URLSearchParams(window.location.search).get("code");
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
 
-  const WORKER_URL = "https://dry-unit-8760.workers.dev";
+  const WORKER_URL = "https://nfc.uniqueresonance.com";
 
   async function load() {
-    const res = await fetch(`${WORKER_URL}/?code=${code}`);
-    const data = await res.json();
+    if (!code) return;
 
-    document.getElementById("heading").innerText = data.heading || "";
-    document.getElementById("message").innerText = data.message || "";
+    try {
+      const res = await fetch(`${WORKER_URL}/?code=${code}`);
+      const data = await res.json();
 
-    const media = document.getElementById("media");
+      document.getElementById("heading").innerText = data.heading || "";
+      document.getElementById("message").innerText = data.message || "";
 
-    if (data.media_type === "audio") {
-      media.innerHTML = `<audio controls src="${data.media_url}"></audio>`;
-    } else if (data.media_type === "video") {
-      media.innerHTML = `<video controls src="${data.media_url}"></video>`;
-    } else {
-      media.innerHTML = "";
+      const media = document.getElementById("media");
+
+      if (data.media_type === "video") {
+        media.innerHTML = `
+          <video controls playsinline>
+            <source src="${data.media_url}">
+          </video>`;
+      }
+
+      else if (data.media_type === "audio") {
+        media.innerHTML = `
+          <audio controls>
+            <source src="${data.media_url}">
+          </audio>`;
+      }
+
+      else {
+        media.innerHTML = "";
+      }
+
+    } catch (e) {
+      document.getElementById("heading").innerText = "Memory Not Found";
     }
   }
 
